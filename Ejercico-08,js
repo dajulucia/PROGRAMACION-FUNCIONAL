@@ -1,0 +1,93 @@
+const transacciones = Object.freeze ([
+    { id: 101, tipo: 'deposito', monto: 60000, pais: 'México' },
+ { id: 102, tipo: 'retiro',   monto: 15000, pais: 'Colombia' },  
+ { id: 103, tipo: 'retiro',   monto: 12000, pais: 'México' }, 
+ { id: 104, tipo: 'retiro',   monto: 55000, pais: 'México' }, 
+ { id: 105, tipo: 'deposito', monto: 90000, pais: 'Francia' }, 
+ { id: 106, tipo: 'retiro',   monto: 75000, pais: 'Espana' }   
+]); 
+
+
+ //definir lospredicados a tomicos
+ const esRetiro= t => t.tipo === "retiro";
+ const esMontoSospechoso= t => t.monto >= 5000;
+ const esZonadeRiesgo= t => t.pais !== "Mexixo";
+ //Definir reglas
+ const alertaFraude= t=> esRetiro(t) && (esMontoSospechoso(t) || esZonadeRiesgo(t));
+
+ function* filtrarAlertas (transaciones){
+    for(const t of transacciones){
+        if (alertaFraude(t)){
+            yield t ;
+        }
+    }
+ }
+
+ const alertas = filtrarAlertas(transacciones);
+
+ console.log(alertas.next().value)
+  console.log(alertas.next().value)
+
+
+const aspirantes = Object.freeze([
+     { nombre: 'Luis',  examen: 90, entrevista: 80, estudioSocioeconomico: true },
+    { nombre: 'Elena', examen: 70, entrevista: 90, estudioSocioeconomico: true },   
+    { nombre: 'Pedro', examen: 95, entrevista: 90, estudioSocioeconomico: false },  
+    { nombre: 'María', examen: 85, entrevista: 95, estudioSocioeconomico: true },   
+    { nombre: 'Iván',  examen: 90, entrevista: 90, estudioSocioeconomico: true }   
+]); 
+const puntajes = aspirantes.map(a => ({
+    ...a, puntajeFinal: (a.examen * 0.70) + (a.entrevista * 0.30)
+
+}))
+const tieneBuenPuntaje = e=>e.puntajeFinal >= 85;
+const tieneBuenEstudio = e=>e.estudioSocioeconomico === true;
+
+const calificaParaBeca = e=> tieneBuenPuntaje(e) && tieneBuenEstudio(e);
+
+function* filtrarBecados(datos){
+    for(const e of datos){
+        if(calificaParaBeca(e)){
+            yield e;
+        }
+    }
+}
+const becados = filtrarBecados(puntajes)
+
+const B1 = becados.next().value;
+const B2 = becados.next().value;
+
+const primeroDos =[B1, B2];
+
+const promedio = primeroDos.reduce(
+    (acum, e) => acum + e.puntajeFinal,
+    0
+)/ primeroDos.length;
+
+console.log(B1);
+console.log(B2);
+console.log("Promedio:", promedio);
+
+const paquetes = Object.freeze([ { tracking: 'ZA1', estado: 'Tabasco', peso: 20 }, 
+    { tracking: 'ZA2', estado: 'Veracruz', peso: 18 }, { tracking: 'ZA3', estado: 'Chiapas', peso: 5 }, 
+    { tracking: 'ZA4', estado: 'Yucatán',  peso: 25 },  { tracking: 'ZA5', estado: 'Tabasco', peso: 10 }, 
+    { tracking: 'ZA6', estado: 'Oaxaca',   peso: 30 }  
+]); 
+const esDestinoLocal = p=>p.estado==="Tabasco";
+const esPesado = p=>p.peso >=15;
+
+const envioPrioritario=p => !esDestinoLocal(p) && esPesado(p);
+
+function* filtrarPaquetes(datos){
+    for(const p of datos){
+        if(envioPrioritario(p)){
+            yield p
+        }
+    }
+}
+const camion = filtrarPaquetes(paquetes);
+const p1 = camion.next().value;
+const p2 = camion.next().value;
+
+console.log(p1)
+console.log(p2)
